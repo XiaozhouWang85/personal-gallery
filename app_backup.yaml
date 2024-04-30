@@ -1,0 +1,26 @@
+runtime: python39
+
+instance_class: F1
+
+automatic_scaling:
+  min_instances: 1
+  max_instances: 15
+  min_idle_instances: 1
+
+handlers:
+# Handle the main page by serving the index page.
+# Note the $ to specify the end of the path, since app.yaml does prefix matching.
+- url: /test_gallery/$
+  static_files: photos/test_gallery/public/index.html
+  upload: photos/test_gallery/public/index.html
+
+
+# Handle folder urls by serving the index.html page inside.
+- url: /test_gallery/(.*)/$
+  static_files: photos/test_gallery/public/\1/index.html
+  upload: photos/test_gallery/public/.*/index.html
+
+# Handle nearly every other file by just serving it.
+- url: /test_gallery/(.+)
+  static_files: photos/test_gallery/public/\1
+  upload: photos/test_gallery/public/(.*)

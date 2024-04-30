@@ -1,3 +1,8 @@
+# Custom
+photos/*
+
+# Standard Python
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -127,3 +132,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+photo-gallery-336913-a3e805ba7d36.json

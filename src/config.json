@@ -1,0 +1,22 @@
+{
+    "root": "/Users/xiaozhouwang/Documents/pictures/",
+    "target": "/Users/xiaozhouwang/Documents/GitHub/personal-gallery/photos/",
+    "template": "/Users/xiaozhouwang/Documents/GitHub/personal-gallery/gallery_template/",
+    "folders": [
+        {
+            "path" : "202109",
+            "title" : "September 2021",
+            "description" : "Tim's first month with us!"
+        },
+        {
+            "path" : "202110",
+            "title" : "October 2021",
+            "description" : "Tim's second month"
+        },
+        {
+            "path" : "202111",
+            "title" : "November 2021",
+            "description" : "Month 3"
+        }
+    ]
+}
