@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import json
+import urllib.parse
 import os
-from flask import Flask, make_response, render_template, request
-from src.schema import schema_config
+import tempfile
+from flask import Flask, make_response, render_template, request, send_from_directory
 import datetime
 from google.cloud import storage
 from google import auth
@@ -23,22 +24,6 @@ def get_gcs_json(filename):
     blob = GCS_BUCKET.blob(GCS_SUBFOLDER + filename)
     data = json.loads(blob.download_as_string(client=None))
     return data
-
-def generate_download_signed_url_v4(filename):
-    """Generates a v4 signed URL for downloading a blob.
-
-    Note that this method requires a service account key file. You can not use
-    this if you are using Application Default Credentials from Google Compute
-    Engine or from the Google Cloud SDK.
-    """
-    blob = GCS_BUCKET.blob(GCS_SUBFOLDER + filename)
-
-    url = blob.generate_signed_url(
-        version="v4",
-        expiration=datetime.timedelta(minutes=90),
-        method="GET",
-    )
-    return url
 
 def month_to_string(month):
     return datetime.date(int(month[:4]), int(month[4:6]), 1).strftime('%B %Y')
@@ -59,6 +44,15 @@ def index():
         })
     return render_template("index.html", gallery_list=new_list)
 
+@app.route('/get_image/<object>')
+def get_image(object):
+    object_path = urllib.parse.unquote(object)
+    object_name = os.path.basename(object_path)
+    blob = GCS_BUCKET.blob(os.path.join(GCS_SUBFOLDER, object_path))
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        fullpath = os.path.join(tmpdirname, object_name)
+        blob.download_to_filename(fullpath)
+        return send_from_directory(tmpdirname, object_name)
 
 @app.route("/gallery", methods=['GET'])
 def gallery():
@@ -66,15 +60,14 @@ def gallery():
     month = args.get("month")
     folder_date = month_to_string(month)
     
-    
     # Load the images_data from gcs
     images_data = get_gcs_json('image_metadata/{}.json'.format(month))
     images_data_list = [{**images_data[image], "name": image} for image in images_data.keys()]
     images_data_list = list(sorted(images_data_list, key=lambda x:x['unix_time']))
 
     for image in images_data_list:
-        image['src'] = generate_download_signed_url_v4(image['src'])
-        image['thumbnail'] = generate_download_signed_url_v4(image['thumbnail'])
+        image['src'] = urllib.parse.quote(image['src'], safe='')
+        image['thumbnail'] = urllib.parse.quote(image['thumbnail'], safe='')
 
     for image in images_data_list:
         if image["type"] == "image":
@@ -97,4 +90,4 @@ def gallery():
     )
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=8080, debug=True)

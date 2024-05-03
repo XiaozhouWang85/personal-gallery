@@ -26,7 +26,7 @@
 
   <style>
     .header-image {
-      background: #333366 url("{{ background_photo }}");
+      background: #333366 url("{{ url_for('get_image', object=gallery_config['background_photo']) }}");
       background-position: center {{ gallery_config['background_photo_offset'] }}%;
       background-repeat: no-repeat;
       background-size: cover;
@@ -52,7 +52,7 @@
   <div class="row">
   <div class="col gallery">
     {% for i in range(from, to) %}
-      <a href="{{ images[i].src }}"
+      <a href="{{ url_for('get_image', object=images[i].src) }}"
          class="gallery-photo"
          data-index="{{ i-from }}"
          data-type="{{ images[i].type }}"
@@ -61,7 +61,7 @@
          data-height="{{ images[i].size[1] }}"
          data-date="{{ images[i].date }}"
          style="--w: {{ images[i].thumbnail_size[0] }}; --h: {{ images[i].thumbnail_size[1] }}">
-         <img src="{{ images[i].thumbnail }}" class="thumbnail rounded" alt="{{ images[i].description }}"/></a>
+         <img src="{{ url_for('get_image',  object=images[i].thumbnail ) }}" class="thumbnail rounded" alt="{{ images[i].description }}"/></a>
     {% endfor %}
   </div>
 </div>

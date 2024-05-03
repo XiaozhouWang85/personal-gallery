@@ -148,7 +148,7 @@ class FilesGalleryLogic():
             image_data = spg_media.get_metadata(
                 image, thumbnail_path, self.gallery_config["public_path"]
             )
-
+            
             # Scale down the thumbnail size to the display size
             image_data["thumbnail_size"] = (
                 round(
@@ -199,4 +199,3 @@ if __name__ == "__main__":
         gallery_logic = FilesGalleryLogic(gallery_json)
         gallery_logic.create_thumbnails()
         gallery_logic.create_images_data_file()
-    
